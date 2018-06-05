@@ -11,7 +11,7 @@ C:\Users\Administrator>pip install windnd<br>
 为了在使用 tkinter 时候能更好的实现拖拽加载功能。<br>
 测试代码：<br>
 <br>
-```python
+```
 try:
     import tkinter<br>
 except:
@@ -28,7 +28,7 @@ hook_dropfiles函数有两个参数<br>
 第二个：执行函数，默认是一个收集所有拖进来的地址进行遍历打印输出的函数。<br>
 <br>
 默认函数：<br>
-```python
+```
 def _func(ls):
     for i in ls:
         print(i)
