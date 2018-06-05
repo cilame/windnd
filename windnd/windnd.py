@@ -2,7 +2,7 @@ def _func(ls):
     for i in ls:
         print(i)
 
-def hook_dropfiles(hwnd,func=_func):
+def hook_dropfiles(tkwindow_or_winfoid,func=_func):
     """
     # this func to deal drag icon & drop to load in windows
 
@@ -19,7 +19,7 @@ def hook_dropfiles(hwnd,func=_func):
                 print(i)
         #===================
     test evironment:
-        python3.6
+        py2, py3
         work on win7 32bit & 64bit.
     
     if you use tk, you can hook like this:
@@ -34,11 +34,23 @@ def hook_dropfiles(hwnd,func=_func):
     > tk = tk.Tk()
     > hwnd = tk.winfo_id()
     >
+    > # you don't have to write "hwnd = tk.winfo_id()" in tkinter
+    > # because you can put "tk" in this function like:
+    > # "windnd.hook_dropfiles(tk,func = my_func)"
+    > # the reason for this is to expand interface
+    >
     > windnd.hook_dropfiles(hwnd,func = my_func)
     >
     > tk.mainloop()
     =================================================
     """
+    
+    # this place just for expand interface
+    # because may anther window tools need use hwnd to hook
+    hwnd = tkwindow_or_winfoid.winfo_id()\
+           if getattr(tkwindow_or_winfoid,"winfo_id")\
+           else tkwindow_or_winfoid
+    
     import platform
     import ctypes
     from ctypes.wintypes import DWORD
@@ -82,16 +94,5 @@ def hook_dropfiles(hwnd,func=_func):
     ctypes.windll.shell32.DragAcceptFiles(hwnd,True)
     globals()[old] = GetWindowLong(hwnd,GWL_WNDPROC)
     SetWindowLong(hwnd,GWL_WNDPROC,globals()[new])
-
-def text_on_tkinter():
-    import tkinter
-    t = tk.Tk()
-    a = tk.Entry(t)
-    b = tk.Entry(t)
-    hook_dropfiles(a.winfo_id())
-    hook_dropfiles(b.winfo_id())
-    a.pack(side="top")
-    b.pack(side="top")
-    t.mainloop()
 
     
