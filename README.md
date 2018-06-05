@@ -28,4 +28,4 @@ hook_dropfiles函数有两个参数
 默认函数：
 def _func(ls):
     for i in ls:
-        print(i)
+        print(i) 
