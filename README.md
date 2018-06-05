@@ -10,9 +10,9 @@ C:\Users\Administrator>pip install windnd<br>
 测试代码：<br>
 <br>
 try:<br>
-    import tkinter<br>
+>>import tkinter<br>
 except:<br>
-    import Tkinter as tkinter<br>
+>>import Tkinter as tkinter<br>
 <br>
 import windnd<br>
 tk = tkinter.Tk()<br>
@@ -26,5 +26,5 @@ hook_dropfiles函数有两个参数<br>
 <br>
 默认函数：<br>
 def _func(ls):<br>
-    for i in ls:<br>
-        print(i) <br>
+>>for i in ls:<br>
+>>>>print(i) <br>
