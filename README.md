@@ -11,9 +11,10 @@ C:\Users\Administrator>pip install windnd<br>
 为了在使用 tkinter 时候能更好的实现拖拽加载功能。<br>
 测试代码：<br>
 <br>
+
 ```
 try:
-    import tkinter<br>
+    import tkinter
 except:
     import Tkinter as tkinter
 
