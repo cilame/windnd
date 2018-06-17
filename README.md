@@ -3,7 +3,7 @@ windows drag icon and drop to load abs path.<br>
 it can use pip install: <br>
 <br>
 ```
-C:\Users\Administrator>pip install windnd<br>
+C:\Users\Administrator>pip install windnd
 ```
 <br>
 ==============================================<br>
