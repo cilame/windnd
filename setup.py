@@ -1,23 +1,16 @@
 import os
 import sys
-import codecs
  
 try:
     from setuptools import setup
 except:
     from distutils.core import setup
  
-def read(fname):
-    return codecs.open(os.path.join(os.path.dirname(__file__), fname),
-                encoding="utf-8").read()
- 
-LONG_DESCRIPTION = read("README.md")
- 
 setup(
     name = "windnd",
     version = "1.0.5",
     description = "windows drag icon & drop load.",
-    long_description = LONG_DESCRIPTION,
+    long_description = "import windnd;help(windnd)",
     classifiers = [
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
