@@ -15,7 +15,7 @@ LONG_DESCRIPTION = read("README.md")
  
 setup(
     name = "windnd",
-    version = "1.0.2",
+    version = "1.0.3",
     description = "windows drag icon & drop load.",
     long_description = LONG_DESCRIPTION,
     classifiers = [

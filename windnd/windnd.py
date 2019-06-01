@@ -2,10 +2,10 @@ def _func(ls):
     for i in ls:
         print(i)
 
+
 def hook_dropfiles(tkwindow_or_winfoid,func=_func):
     """
     # this func to deal drag icon & drop to load in windows
-
     *args:
         hwnd
     **kw:
@@ -30,8 +30,8 @@ def hook_dropfiles(tkwindow_or_winfoid,func=_func):
           for idx,i in enumerate(ls):
               print(idx,i)
     >
-    > import tk
-    > tk = tk.Tk()
+    > import tkinter
+    > tk = tkinter.Tk()
     > hwnd = tk.winfo_id()
     >
     > # you don't have to write "hwnd = tk.winfo_id()" in tkinter
@@ -47,30 +47,42 @@ def hook_dropfiles(tkwindow_or_winfoid,func=_func):
     
     # this place just for expand interface
     # because may anther window tools need use hwnd to hook
-    hwnd = tkwindow_or_winfoid.winfo_id()\
-           if getattr(tkwindow_or_winfoid,"winfo_id")\
-           else tkwindow_or_winfoid
-    
+    # If you want to process .lnk , you can look at examples from the source code
+
     import platform
     import ctypes
     from ctypes.wintypes import DWORD
-    prototype = ctypes.WINFUNCTYPE(DWORD,DWORD,DWORD,DWORD,DWORD)
+
+    hwnd = tkwindow_or_winfoid.winfo_id()\
+           if getattr(tkwindow_or_winfoid, "winfo_id", None)\
+           else tkwindow_or_winfoid
+
+    if platform.architecture()[0] == "32bit":
+        GetWindowLong = ctypes.windll.user32.GetWindowLongW
+        SetWindowLong = ctypes.windll.user32.SetWindowLongW
+        argtype = DWORD
+    elif platform.architecture()[0] == "64bit":
+        GetWindowLong = ctypes.windll.user32.GetWindowLongPtrW
+        SetWindowLong = ctypes.windll.user32.SetWindowLongPtrW
+        argtype = ctypes.c_uint64
+
+    prototype = ctypes.WINFUNCTYPE(argtype,argtype,argtype,argtype,argtype)
     WM_DROPFILES = 0x233
     GWL_WNDPROC = -4
 
     def py_drop_func(hwnd,msg,wp,lp):
         global files
         if msg == WM_DROPFILES:
-            count = ctypes.windll.shell32.DragQueryFile(wp,-1,None,None)
+            count = ctypes.windll.shell32.DragQueryFile(argtype(wp),-1,None,None)
             szFile = ctypes.c_buffer(260)
             files = []
             for i in range(count):
-                ctypes.windll.shell32.DragQueryFile(wp,i,szFile,ctypes.sizeof(szFile))
+                ctypes.windll.shell32.DragQueryFile(argtype(wp),i,szFile,ctypes.sizeof(szFile))
                 dropname = szFile.value
                 files.append(dropname)
             func(files)
-            ctypes.windll.shell32.DragFinish(wp)
-        return ctypes.windll.user32.CallWindowProcW(globals()[old],hwnd,msg,wp,lp)
+            ctypes.windll.shell32.DragFinish(argtype(wp))
+        return ctypes.windll.user32.CallWindowProcW(*map(argtype,(globals()[old],hwnd,msg,wp,lp)))
 
     # for limit hook number, protect computer.
     limit_num = 200
@@ -84,15 +96,41 @@ def hook_dropfiles(tkwindow_or_winfoid,func=_func):
     globals()[old] = None
     globals()[new] = prototype(py_drop_func)
 
-    if platform.architecture()[0] == "32bit":
-        GetWindowLong = ctypes.windll.user32.GetWindowLongW
-        SetWindowLong = ctypes.windll.user32.SetWindowLongW
-    elif platform.architecture()[0] == "64bit":
-        GetWindowLong = ctypes.windll.user32.GetWindowLongPtrW
-        SetWindowLong = ctypes.windll.user32.SetWindowLongPtrW
-
     ctypes.windll.shell32.DragAcceptFiles(hwnd,True)
     globals()[old] = GetWindowLong(hwnd,GWL_WNDPROC)
     SetWindowLong(hwnd,GWL_WNDPROC,globals()[new])
 
-    
+
+if __name__ == '__main__':
+    def myfunc(ls):
+        def _local_lnk(link):
+            ''' 处理 link 指向的问题。'''
+            import platform
+            if platform.python_version().startswith('3') and type(link) is bytes:
+                try:
+                    _link = link.decode()
+                except:
+                    _link = link.decode('gbk')
+            else:
+                _link = link
+            try:
+                import sys, win32com.client
+                shell = win32com.client.Dispatch("WScript.Shell")
+                shortcut = shell.CreateShortCut(_link)
+                return shortcut.Targetpath if shortcut.Targetpath.strip() else _link
+            except:
+                return _link
+        for i in ls:
+            print('deal link:',_local_lnk(i))
+
+    def test():
+        '''
+        将 windows 桌面的图标拖拽到被挂钩的窗口内
+        对加载到的图标路径进行对应处理的函数。
+        '''
+        import tkinter
+        tk = tkinter.Tk()
+        hook_dropfiles(tk, myfunc)
+        tk.mainloop()
+
+    test()
