@@ -62,8 +62,8 @@ def hook_dropfiles(tkwindow_or_winfoid,func=_func):
         SetWindowLong = ctypes.windll.user32.SetWindowLongW
         argtype = DWORD
     elif platform.architecture()[0] == "64bit":
-        GetWindowLong = ctypes.windll.user32.GetWindowLongPtrW
-        SetWindowLong = ctypes.windll.user32.SetWindowLongPtrW
+        GetWindowLong = ctypes.windll.user32.GetWindowLongPtrA
+        SetWindowLong = ctypes.windll.user32.SetWindowLongPtrA
         argtype = ctypes.c_uint64
 
     prototype = ctypes.WINFUNCTYPE(argtype,argtype,argtype,argtype,argtype)
