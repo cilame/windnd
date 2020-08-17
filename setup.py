@@ -8,7 +8,7 @@ except:
  
 setup(
     name = "windnd",
-    version = "1.0.6",
+    version = "1.0.7",
     description = "windows drag icon & drop load.",
     long_description = "import windnd;help(windnd)",
     classifiers = [

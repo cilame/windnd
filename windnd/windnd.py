@@ -3,7 +3,7 @@ def _func(ls):
         print(i)
 
 
-def hook_dropfiles(tkwindow_or_winfoid,func=_func):
+def hook_dropfiles(tkwindow_or_winfoid,func=_func,force_unicode=False):
     """
     # this func to deal drag icon & drop to load in windows
     *args:
@@ -69,15 +69,17 @@ def hook_dropfiles(tkwindow_or_winfoid,func=_func):
     prototype = ctypes.WINFUNCTYPE(argtype,argtype,argtype,argtype,argtype)
     WM_DROPFILES = 0x233
     GWL_WNDPROC = -4
+    create_buffer = ctypes.create_unicode_buffer if force_unicode else ctypes.c_buffer
+    func_DragQueryFile = ctypes.windll.shell32.DragQueryFileW if force_unicode else ctypes.windll.shell32.DragQueryFile
 
     def py_drop_func(hwnd,msg,wp,lp):
         global files
         if msg == WM_DROPFILES:
-            count = ctypes.windll.shell32.DragQueryFile(argtype(wp),-1,None,None)
-            szFile = ctypes.c_buffer(260)
+            count = func_DragQueryFile(argtype(wp),-1,None,None)
+            szFile = create_buffer(260)
             files = []
             for i in range(count):
-                ctypes.windll.shell32.DragQueryFile(argtype(wp),i,szFile,ctypes.sizeof(szFile))
+                func_DragQueryFile(argtype(wp),i,szFile,ctypes.sizeof(szFile))
                 dropname = szFile.value
                 files.append(dropname)
             func(files)
