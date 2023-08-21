@@ -71,6 +71,9 @@ def hook_dropfiles(tkwindow_or_winfoid,func=_func,force_unicode=False):
     GWL_WNDPROC = -4
     create_buffer = ctypes.create_unicode_buffer if force_unicode else ctypes.c_buffer
     func_DragQueryFile = ctypes.windll.shell32.DragQueryFileW if force_unicode else ctypes.windll.shell32.DragQueryFile
+    if ctypes.windll.shell32.IsUserAnAdmin() == 1:
+        ctypes.windll.user32.ChangeWindowMessageFilter(WM_DROPFILES, 1);
+        ctypes.windll.user32.ChangeWindowMessageFilter(0x0049, 1); # 0x0049 = WM_COPYGLOBALDATA
 
     def py_drop_func(hwnd,msg,wp,lp):
         global files
